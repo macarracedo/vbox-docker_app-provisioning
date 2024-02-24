@@ -1,10 +1,15 @@
 terraform {
   required_providers {
     virtualbox = {
-      source  = "terra-farm/virtualbox"
-      version = "0.2.2-alpha.1"
+      source  = "shekeriev/virtualbox"
+      version = "0.0.4"
     }
   }
+}
+
+provider "virtualbox" {
+  delay      = 60
+  mintimeout = 5
 }
 
 # There are currently no configuration options for the provider itself.
@@ -12,7 +17,7 @@ terraform {
 resource "virtualbox_vm" "node" {
   count  = 2
   name   = format("node-%02d", count.index + 1)
-  image  = "https://app.vagrantup.com/ubuntu/boxes/trusty64/versions/20190514.0.0/providers/virtualbox.box"
+  image  = "https://app.vagrantup.com/shekeriev/boxes/debian-11/versions/0.2/providers/virtualbox.box"
   cpus   = 2
   memory = "512 mib"
   //user_data = file("${path.module}/user_data")
@@ -36,7 +41,7 @@ resource "virtualbox_vm" "node" {
 
   # OPCION 2: ESTABLECER RELACIÓN DE CONFIANZA ENTRE HOST Y VMs
   provisioner "local-exec" {
-    command     = "sshpass -p '${var.password}' ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@${self.network_adapter.0.ipv4_address}"
+    command = "sshpass -p '${var.password}' ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@${self.network_adapter.0.ipv4_address}"
   }
 
   provisioner "local-exec" {
